@@ -45,7 +45,7 @@ class Follow(db.Model):
 
 class Taf(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    station_id = db.Column(db.String(4), db.ForeignKey('station.station_id'), index=True)
+    station_id = db.Column(db.String(4), index=True)
     issue_time = db.Column(db.DateTime, index=True)
     bulletin_time = db.Column(db.DateTime, index=True)
     valid_time_from = db.Column(db.DateTime, index=True)
