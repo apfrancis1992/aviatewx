@@ -1,4 +1,4 @@
-from flask import render_template, flash, redirect, url_for, request
+from flask import render_template, flash, redirect, url_for, request, send_from_directory
 from flask_login import login_user, logout_user, current_user, login_required
 from werkzeug.urls import url_parse
 from app import app, db
@@ -6,6 +6,8 @@ from app.forms import LoginForm, RegistrationForm, EditProfileForm, SearchStatio
 from app.models import User, Metar, Taf, Pirep, Follow
 from datetime import datetime
 from sqlalchemy import desc
+import os
+
 
 @app.before_request
 def before_request():
@@ -106,3 +108,8 @@ def follow():
         flash(f'Congratulations, you are now following {form.station_id.data}!')
         return redirect(url_for('index'))
     return render_template('follow.html', title='Follow', form=form)
+
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory(os.path.join(app.root_path, 'static'),
+                          'favicon.ico',mimetype='image/vnd.microsoft.icon')
