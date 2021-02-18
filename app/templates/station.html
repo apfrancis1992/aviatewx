@@ -1,0 +1,433 @@
+{% extends "base.html" %}
+
+
+{% block app_content %}
+    <h1>Weather for {{ station }}</h1>
+    <button class='accordion'><h3>METAR Information</h3></button>
+    <div class='panel'>
+    {% if metar.flight_category != "VFR" %}
+        <div id="weatherIFR">
+        {% else %}
+        <div id="weatherVFR">{% endif %}
+        <table>
+            <tr>
+                <td>Observed Time:&nbsp</td>
+                <td>{{ metar.observation_time }}</td>
+            </tr>
+            <tr>
+                <td>Flight Category:&nbsp</td>
+                <td>{{ metar.flight_category }}</td>
+            </tr>
+            <tr>
+                <td>Visibility:&nbsp</td>
+                <td>{{ metar.visibility_statute_mi }}</td>
+            </tr>
+            <tr>
+                <td>Temperature C:&nbsp</td>
+                <td>{{ metar.temp_c }}</td>
+            </tr>
+            <tr>
+                <td>Dewpoint C:&nbsp</td>
+                <td>{{ metar.dewpoint_c }}</td>
+            </tr>
+            <tr>
+                <td>Altimeter Hg:&nbsp</td>
+                <td>{{ metar.altim_in_hg }}</td>
+            </tr>
+            <tr>
+                <td>Wind Direction:&nbsp</td>
+                <td>{{ metar.wind_dir_degrees }}</td>
+            </tr>
+            <tr>
+                <td>Wind Speed:&nbsp</td>
+                <td>{{ metar.wind_speed_kt }}</td>
+            </tr>
+            <tr>
+                <td>Gusting:&nbsp</td>
+                <td>{{ metar.wind_gust_kt }}</td>
+            </tr>
+            <tr>
+                <td>Weather:&nbsp</td>
+                <td>{{ metar.wx_string }}</td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+<button class='accordion'><h3>TAF Information</h3></button>
+<div class='panel'>
+        {% if metar.flight_category != "VFR" %}
+        <div id="weatherIFR">
+        {% else %}
+        <div id="weatherVFR">
+            {% endif %}
+        <table>
+            <tr>
+                <td>Issue Time:&nbsp</td>
+                <td>{{ taf_time.issue_time }}</td>
+            </tr>
+            <tr>
+                <td>Valid From:&nbsp</td>
+                <td>{{ taf_time.valid_time_from }}</td>
+            </tr>
+            <tr>
+                <td>Valid To:&nbsp</td>
+                <td>{{ taf_time.valid_time_to }}</td>
+            </tr>
+            {% for taf in tafs %}
+            <tr>
+                <td><hr class="breaker"></td>
+                <td><hr class="breaker"></td>
+            </tr>
+            <tr>
+                <td>Forecasted Time From:&nbsp</td>
+                <td>{{ taf.fcst_time_from }}</td>
+            </tr>
+            <tr>
+                <td>Forecasted Time To:&nbsp</td>
+                <td>{{ taf.fcst_time_to }}</td>
+            </tr>
+            {% if taf.remarks != None %}
+            <tr>
+                <td>Remarks:&nbsp</td>
+                <td>{{ taf.remarks }}</td>
+            </tr>
+            {% endif %}
+            <tr>
+                <td>Wind Speed:&nbsp</td>
+                <td>{{ taf.wind_speed_kt }}</td>
+            </tr>
+            <tr>
+                <td>Wind Direction:&nbsp</td>
+                <td>{{ taf.wind_dir_degrees }}</td>
+            </tr>
+            <tr>
+                <td>Visibility:&nbsp</td>
+                <td>{{ taf.visibility_statute_mi }}</td>
+            </tr>
+            {% if taf.cloud_base_ft_agl1 != None %}
+            <tr>
+                <td>Cloud Base:&nbsp</td>
+                <td>{{ taf.cloud_base_ft_agl1 }}</td>
+            </tr>
+            {% endif %}
+            {% if taf.cloud_type1 != None %}
+            <tr>
+                <td>Cloud Type:&nbsp</td>
+                <td>{{ taf.cloud_type1 }}</td>
+            </tr>
+            {% endif %}
+            {% if taf.icing_intensity1 != None %}
+            <tr>
+                <td>Icing Intensity:&nbsp</td>
+                <td>{{ taf.icing_intensity1 }}</td>
+            </tr>
+            {% endif %}
+            {% if taf.icing_min_alt_ft_agl1 != None %}
+            <tr>
+                <td>Icing Min Altitude:&nbsp</td>
+                <td>{{ taf.icing_min_alt_ft_agl1 }}</td>
+            </tr>
+            {% endif %}
+            {% if taf.icing_max_alt_ft_agl1 != None %}
+            <tr>
+                <td>Icing Min Altitude:&nbsp</td>
+                <td>{{ taf.icing_max_alt_ft_agl1 }}</td>
+            </tr>
+            {% endif %}
+            {% if taf.sky_cover1 != None %}
+            <tr>
+                <td>Sky Cover:&nbsp</td>
+                <td>{{ taf.sky_cover1 }}</td>
+            </tr>
+            {% endif %}
+            {% if taf.turbulence_intensity1 != None %}
+            <tr>
+                <td>Turbulence Intensity:&nbsp</td>
+                <td>{{ taf.turbulence_intensity1 }}</td>
+            </tr>
+            {% endif %}
+            {% if taf.turbulence_min_alt_ft_agl1 != None %}
+            <tr>
+                <td>Turbulence Min Altitude:&nbsp</td>
+                <td>{{ taf.turbulence_min_alt_ft_agl1 }}</td>
+            </tr>
+            {% endif %}
+            {% if taf.turbulence_max_alt_ft_agl1 != None %}
+            <tr>
+                <td>Turbulence Max Altitude:&nbsp</td>
+                <td>{{ taf.turbulence_max_alt_ft_agl1 }}</td>
+            </tr>
+            {% endif %}
+
+
+            {% if taf.cloud_base_ft_agl2 != None %}
+            <tr>
+                <td>Cloud Base:&nbsp</td>
+                <td>{{ taf.cloud_base_ft_agl2 }}</td>
+            </tr>
+            {% endif %}
+            {% if taf.cloud_type2 != None %}
+            <tr>
+                <td>Cloud Type:&nbsp</td>
+                <td>{{ taf.cloud_type2 }}</td>
+            </tr>
+            {% endif %}
+            {% if taf.icing_intensity2 != None %}
+            <tr>
+                <td>Icing Intensity:&nbsp</td>
+                <td>{{ taf.icing_intensity2 }}</td>
+            </tr>
+            {% endif %}
+            {% if taf.icing_min_alt_ft_agl2 != None %}
+            <tr>
+                <td>Icing Min Altitude:&nbsp</td>
+                <td>{{ taf.icing_min_alt_ft_agl2 }}</td>
+            </tr>
+            {% endif %}
+            {% if taf.icing_max_alt_ft_agl2 != None %}
+            <tr>
+                <td>Icing Min Altitude:&nbsp</td>
+                <td>{{ taf.icing_max_alt_ft_agl2 }}</td>
+            </tr>
+            {% endif %}
+            {% if taf.sky_cover2 != None %}
+            <tr>
+                <td>Sky Cover:&nbsp</td>
+                <td>{{ taf.sky_cover2 }}</td>
+            </tr>
+            {% endif %}
+            {% if taf.turbulence_intensity2 != None %}
+            <tr>
+                <td>Turbulence Intensity:&nbsp</td>
+                <td>{{ taf.turbulence_intensity2 }}</td>
+            </tr>
+            {% endif %}
+            {% if taf.turbulence_min_alt_ft_agl2 != None %}
+            <tr>
+                <td>Turbulence Min Altitude:&nbsp</td>
+                <td>{{ taf.turbulence_min_alt_ft_agl2 }}</td>
+            </tr>
+            {% endif %}
+            {% if taf.turbulence_max_alt_ft_agl2 != None %}
+            <tr>
+                <td>Turbulence Max Altitude:&nbsp</td>
+                <td>{{ taf.turbulence_max_alt_ft_agl2 }}</td>
+            </tr>
+            {% endif %}
+            {% endfor %}
+        </table>
+        </div>
+    </div>
+
+    <button class='accordion'><h3>PIREP Information</h3></button>
+    <div class='panel'>
+            {% if metar.flight_category != "VFR" %}
+            <div id="weatherIFR">
+            {% else %}
+            <div id="weatherVFR">
+            {% endif %}
+            <table>
+                {% for pirep in pireps %}
+                <tr>
+                    <td>Observation Time:&nbsp</td>
+                    <td>{{ pirep.observation_time }}</td>
+                </tr>
+                <tr>
+                    <td>Aircraft Reference:&nbsp</td>
+                    <td>{{ pirep.aircraft_ref }}</td>
+                </tr>
+                <tr>
+                    <td>Altitude MSL:&nbsp</td>
+                    <td>{{ pirep.altitude_ft_msl }}</td>
+                </tr>
+                {% if pirep.sky_cover1 != None %}
+                <tr>
+                    <td>Sky Cover:&nbsp</td>
+                    <td>{{ pirep.sky_cover1 }}</td>
+                </tr>
+                {% endif %}
+                {% if pirep.sky_cover1 != None %}
+                <tr>
+                    <td>Sky Cover:&nbsp</td>
+                    <td>{{ pirep.sky_cover1 }}</td>
+                </tr>
+                {% endif %}
+                {% if pirep.cloud_base_ft_msl1 != None %}
+                <tr>
+                    <td>Cloud Base MSL:&nbsp</td>
+                    <td>{{ pirep.cloud_base_ft_msl1 }}</td>
+                </tr>
+                {% endif %}
+                {% if pirep.cloud_top_ft_msl1 != None %}
+                <tr>
+                    <td>Cloud Top MSL:&nbsp</td>
+                    <td>{{ pirep.cloud_top_ft_msl1 }}</td>
+                </tr>
+                {% endif %}
+                {% if pirep.turbulence_type1 != None %}
+                <tr>
+                    <td>Turbulence Type:&nbsp</td>
+                    <td>{{ pirep.turbulence_type1 }}</td>
+                </tr>
+                {% endif %}
+                {% if pirep.turbulence_intensity1 != None %}
+                <tr>
+                    <td>Turbulence Intensity:&nbsp</td>
+                    <td>{{ pirep.turbulence_intensity1 }}</td>
+                </tr>
+                {% endif %}
+                {% if pirep.turbulence_base_ft_msl1 != None %}
+                <tr>
+                    <td>Turbulence Base:&nbsp</td>
+                    <td>{{ pirep.turbulence_base_ft_msl1 }}</td>
+                </tr>
+                {% endif %}
+                {% if pirep.turbulence_top_ft_msl1 != None %}
+                <tr>
+                    <td>Turbulence Top:&nbsp</td>
+                    <td>{{ pirep.turbulence_top_ft_msl1 }}</td>
+                </tr>
+                {% endif %}
+                {% if pirep.turbulence_freq1 != None %}
+                <tr>
+                    <td>Turbulence Frequency:&nbsp</td>
+                    <td>{{ pirep.turbulence_freq1 }}</td>
+                </tr>
+                {% endif %}
+                {% if pirep.icing_type1 != None %}
+                <tr>
+                    <td>Icing Type:&nbsp</td>
+                    <td>{{ pirep.icing_type1 }}</td>
+                </tr>
+                {% endif %}
+                {% if pirep.icing_intensity1 != None %}
+                <tr>
+                    <td>Icing Intensity:&nbsp</td>
+                    <td>{{ pirep.icing_intensity1 }}</td>
+                </tr>
+                {% endif %}
+                {% if pirep.icing_base_ft_msl1 != None %}
+                <tr>
+                    <td>Icing Base MSL:&nbsp</td>
+                    <td>{{ pirep.icing_base_ft_msl1 }}</td>
+                </tr>
+                {% endif %}
+                {% if pirep.icing_top_ft_msl1 != None %}
+                <tr>
+                    <td>Icing Top MSL:&nbsp</td>
+                    <td>{{ pirep.icing_top_ft_msl1 }}</td>
+                </tr>
+                {% endif %}
+                {% if pirep.icing_top_ft_msl1 != None %}
+                <tr>
+                    <td>Icing Top MSL:&nbsp</td>
+                    <td>{{ pirep.icing_top_ft_msl1 }}</td>
+                </tr>
+                {% endif %}
+                {% if pirep.sky_cover2 != None %}
+                <tr>
+                    <td>Sky Cover:&nbsp</td>
+                    <td>{{ pirep.sky_cover2 }}</td>
+                </tr>
+                {% endif %}
+                {% if pirep.cloud_base_ft_msl2 != None %}
+                <tr>
+                    <td>Cloud Base MSL:&nbsp</td>
+                    <td>{{ pirep.cloud_base_ft_msl2 }}</td>
+                </tr>
+                {% endif %}
+                {% if pirep.cloud_top_ft_msl2 != None %}
+                <tr>
+                    <td>Cloud Top MSL:&nbsp</td>
+                    <td>{{ pirep.cloud_top_ft_msl2 }}</td>
+                </tr>
+                {% endif %}
+                {% if pirep.turbulence_type2 != None %}
+                <tr>
+                    <td>Turbulence Type:&nbsp</td>
+                    <td>{{ pirep.turbulence_type2 }}</td>
+                </tr>
+                {% endif %}
+                {% if pirep.turbulence_intensity2 != None %}
+                <tr>
+                    <td>Turbulence Intensity:&nbsp</td>
+                    <td>{{ pirep.turbulence_intensity2 }}</td>
+                </tr>
+                {% endif %}
+                {% if pirep.turbulence_base_ft_msl2 != None %}
+                <tr>
+                    <td>Turbulence Base:&nbsp</td>
+                    <td>{{ pirep.turbulence_base_ft_msl2 }}</td>
+                </tr>
+                {% endif %}
+                {% if pirep.turbulence_top_ft_msl2 != None %}
+                <tr>
+                    <td>Turbulence Top:&nbsp</td>
+                    <td>{{ pirep.turbulence_top_ft_msl_ft_msl2 }}</td>
+                </tr>
+                {% endif %}
+                {% if pirep.turbulence_freq2 != None %}
+                <tr>
+                    <td>Turbulence Frequency:&nbsp</td>
+                    <td>{{ pirep.turbulence_freq2 }}</td>
+                </tr>
+                {% endif %}
+                {% if pirep.icing_type2 != None %}
+                <tr>
+                    <td>Icing Type:&nbsp</td>
+                    <td>{{ pirep.icing_type2 }}</td>
+                </tr>
+                {% endif %}
+                {% if pirep.icing_intensity2 != None %}
+                <tr>
+                    <td>Icing Intensity:&nbsp</td>
+                    <td>{{ pirep.icing_intensity2 }}</td>
+                </tr>
+                {% endif %}
+                {% if pirep.icing_base_ft_msl2 != None %}
+                <tr>
+                    <td>Icing Base MSL:&nbsp</td>
+                    <td>{{ pirep.icing_base_ft_msl2 }}</td>
+                </tr>
+                {% endif %}
+                {% if pirep.icing_top_ft_msl2 != None %}
+                <tr>
+                    <td>Icing Top MSL:&nbsp</td>
+                    <td>{{ pirep.icing_top_ft_msl2 }}</td>
+                </tr>
+                {% endif %}
+                {% if pirep.icing_top_ft_msl2 != None %}
+                <tr>
+                    <td>Icing Top MSL:&nbsp</td>
+                    <td>{{ pirep.icing_top_ft_msl2 }}</td>
+                </tr>
+                {% endif %}
+                <tr>
+                    <td><hr class="breaker"></td>
+                    <td><hr class="breaker"></td>
+                </tr>
+                {% endfor %}
+            </table>
+            </div>
+        </div>
+    
+
+
+    <script>
+        var acc = document.getElementsByClassName("accordion");
+        var i;
+        
+        for (i = 0; i < acc.length; i++) {
+          acc[i].addEventListener("click", function() {
+            this.classList.toggle("active");
+            var panel = this.nextElementSibling;
+            if (panel.style.display === "block") {
+              panel.style.display = "none";
+            } else {
+              panel.style.display = "block";
+            }
+          });
+        }
+        </script>
+{% endblock %}

@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block app_content %}
+    <h1>Hi, {{ current_user.first_name }} {{ current_user.last_name }}!</h1>
+        <div class="row">
+            <div class="col-md-4">
+                {{ wtf.quick_form(form) }}
+            </div>
+        </div>
+    <br>
+    <h2>Current Conditions at airports you follow:</h2>
+    {% for follow in followed %}
+    {% if follow.flight_category != "VFR" %}
+        <div id="weatherIFR">
+        {% else %}
+        <div id="weatherVFR">{% endif %}
+            <a href={{ url_for('station', station_id= follow.station_id) }}>{{ follow.station_id }}</a>
+        <table>
+            <tr>
+                <td>Observed Time:&nbsp</td>
+                <td>{{ follow.observation_time }}</td>
+            </tr>
+            <tr>
+                <td>Flight Category:&nbsp</td>
+                <td>{{ follow.flight_category }}</td>
+            </tr>
+            <tr>
+                <td>Visibility:&nbsp</td>
+                <td>{{ follow.visibility_statute_mi }}</td>
+            </tr>
+            <tr>
+                <td>Temperature C:&nbsp</td>
+                <td>{{ follow.temp_c }}</td>
+            </tr>
+            <tr>
+                <td>Dewpoint C:&nbsp</td>
+                <td>{{ follow.dewpoint_c }}</td>
+            </tr>
+            <tr>
+                <td>Altimeter Hg:&nbsp</td>
+                <td>{{ follow.altim_in_hg }}</td>
+            </tr>
+            <tr>
+                <td>Wind Direction:&nbsp</td>
+                <td>{{ follow.wind_dir_degrees }}</td>
+            </tr>
+            <tr>
+                <td>Wind Speed:&nbsp</td>
+                <td>{{ follow.wind_speed_kt }}</td>
+            </tr>
+            <tr>
+                <td>Gusting:&nbsp</td>
+                <td>{{ follow.wind_gust_kt }}</td>
+            </tr>
+            <tr>
+                <td>Weather:&nbsp</td>
+                <td>{{ follow.wx_string }}</td>
+            </tr>
+        </table>
+    </div>
+{% endfor %}
+{% endblock %}
