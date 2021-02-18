@@ -100,7 +100,7 @@ def station(station_id):
 def follow():
     form = FollowForm()
     if form.validate_on_submit():
-        to_follow = Follow(code=form.station_id.data, text_alert=form.text_alert.data, email_alert=form.email_alert.data, user_id=current_user.id)
+        to_follow = Follow(code=form.station_id.data.upper(), text_alert=form.text_alert.data, email_alert=form.email_alert.data, user_id=current_user.id)
         db.session.add(to_follow)
         db.session.commit()
         flash(f'Congratulations, you are now following {form.station_id.data}!')
