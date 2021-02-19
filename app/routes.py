@@ -20,7 +20,7 @@ def before_request():
 @login_required
 def index():
     form = SearchStation()
-    followed = Metar.query.from_statement(db.text("SELECT DISTINCT ON (station_id) station_id, * FROM (metar JOIN follow ON (((metar.station_id = follow.code)))) ORDER BY station_id, observation_time DESC;")).all()
+    followed = Metar.query.from_statement(db.text(f"SELECT DISTINCT ON (station_id) station_id, * FROM (metar JOIN follow ON (((metar.station_id = follow.code))) AND user_id = {current_user.id}) ORDER BY station_id, observation_time DESC;")).all()
     if form.validate_on_submit():
         station_id = form.station_id.data.upper()
         return redirect(url_for('station', station_id=station_id))
