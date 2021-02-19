@@ -91,9 +91,13 @@ def edit_profile():
 @app.route('/station/<station_id>', methods=['GET', 'POST'])
 @login_required
 def station(station_id):
-    station_metar = Metar.query.filter_by(station_id=station_id).order_by(Metar.id.desc()).first_or_404()
-    taf_time = Taf.query.filter_by(station_id=station_id).order_by(Taf.id.desc()).first_or_404()
-    station_taf = Taf.query.filter_by(station_id=station_id, issue_time=taf_time.issue_time).all()
+    station_metar = Metar.query.filter_by(station_id=station_id).order_by(Metar.id.desc()).limit(1).first_or_404()
+    taf_time = Taf.query.filter_by(station_id=station_id).order_by(Taf.id.desc()).first()
+    print(taf_time)
+    if taf_time is not None:
+        station_taf = Taf.query.filter_by(station_id=station_id, issue_time=taf_time.issue_time).all()
+    else:
+        station_taf = None
     pirep = Pirep.query.from_statement(db.text(f"select * from pirep where  earth_distance(ll_to_earth(pirep.latitude, pirep.longitude), ll_to_earth({station_metar.latitude}, {station_metar.longitude})) < 160934.0 AND pirep.observation_time >= (NOW() - INTERVAL '12 hours' ) ORDER BY observation_time DESC;")).all()
     return render_template('station.html', title=f"{station_id} Weather", metar=station_metar, tafs=station_taf, station=station_id, taf_time=taf_time, pireps=pirep)
 

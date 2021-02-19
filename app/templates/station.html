@@ -53,7 +53,7 @@
         </table>
     </div>
 </div>
-
+{% if taf_time is not none %}
 <button class='accordion'><h3>TAF Information</h3></button>
 <div class='panel'>
         {% if metar.flight_category != "VFR" %}
@@ -219,7 +219,7 @@
         </table>
         </div>
     </div>
-
+{% endif %}
     <button class='accordion'><h3>PIREP Information</h3></button>
     <div class='panel'>
             {% if metar.flight_category != "VFR" %}

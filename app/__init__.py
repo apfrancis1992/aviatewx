@@ -21,6 +21,7 @@ from app import db
 from app.models import Station, Metar, Taf, Pirep
 import click
 from datetime import datetime
+#app.config['SQLALCHEMY_ECHO'] = True
 
 
 @app.cli.command()
