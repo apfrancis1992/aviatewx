@@ -3,6 +3,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from datetime import datetime
 from hashlib import md5
+from sqlalchemy.dialects.postgresql import ARRAY
 
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -204,3 +205,17 @@ class Pirep(db.Model):
     vert_gust_kt = db.Column(db.Integer)
     pirep_type = db.Column(db.String(6))
     raw_text = db.Column(db.String(1000))
+
+class Airsigmet(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    raw_text = db.Column(db.String(5000))
+    valid_time_from = db.Column(db.DateTime, index=True)
+    valid_time_to = db.Column(db.DateTime, index=True)
+    lonlat = db.Column(ARRAY(db.Float))
+    min_ft_msl = db.Column(db.Integer)
+    max_ft_msl = db.Column(db.Integer)
+    movement_dir_degrees = db.Column(db.Integer)
+    movement_speed_kt = db.Column(db.Integer)
+    hazard = db.Column(db.String(20))
+    severity = db.Column(db.String(20))
+    airsigmet_type = db.Column(db.String(20))

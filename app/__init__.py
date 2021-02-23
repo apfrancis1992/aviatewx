@@ -18,7 +18,7 @@ import requests
 import urllib.request
 import xml.etree.ElementTree as ET
 from app import db
-from app.models import Station, Metar, Taf, Pirep
+from app.models import Station, Metar, Taf, Pirep, Airsigmet
 import click
 from datetime import datetime
 #app.config['SQLALCHEMY_ECHO'] = True
@@ -662,3 +662,232 @@ def loadPIREP():
             WXPP = Pirep(receipt_time=receipt_time ,observation_time=observation_time, mid_point_assumed=mid_point_assumed, no_time_stamp=no_time_stamp, flt_lvl_range=flt_lvl_range, above_ground_level_indicated=above_ground_level_indicated, no_flt_lvl=no_flt_lvl, bad_location=bad_location, aircraft_ref=aircraft_ref, latitude=latitude, longitude=longitude, altitude_ft_msl=altitude_ft_msl, sky_cover1=sky_cover[0], sky_cover2=sky_cover[1], cloud_base_ft_msl1=cloud_base_ft_msl[0], cloud_base_ft_msl2=cloud_base_ft_msl[1], cloud_top_ft_msl1=cloud_top_ft_msl[0], cloud_top_ft_msl2=cloud_top_ft_msl[1], turbulence_type1=turbulence_type[0], turbulence_type2=turbulence_type[1], turbulence_intensity1=turbulence_intensity[0], turbulence_intensity2=turbulence_intensity[1], turbulence_base_ft_msl1=turbulence_base_ft_msl[0], turbulence_base_ft_msl2=turbulence_base_ft_msl[1], turbulence_top_ft_msl1=turbulence_top_ft_msl[0], turbulence_top_ft_msl2=turbulence_top_ft_msl[1], turbulence_freq1=turbulence_freq[0], turbulence_freq2=turbulence_freq[1], icing_type1=icing_type[0], icing_type2=icing_type[1], icing_intensity1=icing_intensity[0], icing_intensity2=icing_intensity[1], icing_base_ft_msl1=icing_base_ft_msl[0], icing_base_ft_msl2=icing_base_ft_msl[1], icing_top_ft_msl1=icing_top_ft_msl[0], icing_top_ft_msl2=icing_top_ft_msl[1], visibility_statute_mi=visibility_statute_mi, wx_string=wx_string, temp_c=temp_c, wind_dir_degrees=wind_dir_degrees, wind_speed_kt=wind_speed_kt, vert_gust_kt=vert_gust_kt, pirep_type=pirep_type, raw_text=raw_text)
             db.session.add(WXPP)
             db.session.commit()
+
+@app.cli.command()
+def loadTAF(): 
+    """Load TAF."""
+    url = "https://www.aviationweather.gov/adds/dataserver_current/current/tafs.cache.xml"
+
+    content = urllib.request.urlopen(url).read()
+
+    root = ET.fromstring(content)
+    for taf in root.iter('TAF'):
+        raw_text = taf.find('raw_text').text
+        station_id = taf.find('station_id').text
+        issue_time = taf.find('issue_time').text
+        bulletin_time = taf.find('bulletin_time').text
+        valid_time_from = taf.find('valid_time_from').text
+        valid_time_to = taf.find('valid_time_to').text
+        if taf.find('remarks') is not None:
+            remarks = taf.find('remarks').text
+        else:
+            remarks = None
+        latitude = taf.find('latitude').text
+        longitude = taf.find('longitude').text
+        elevation_m = taf.find('elevation_m').text
+        for forecast in taf.iter('forecast'):
+            fcst_time_from = forecast.find('fcst_time_from').text
+            fcst_time_to = forecast.find('fcst_time_to').text
+            if forecast.find('wind_dir_degrees') is not None:
+                wind_dir_degrees = forecast.find('wind_dir_degrees').text
+            else:
+                wind_dir_degrees = None
+            if forecast.find('change_indicator') is not None:
+                change_indicator = forecast.find('change_indicator').text
+            else:
+                change_indicator = None
+            if forecast.find('time_becoming') is not None:
+                time_becoming = forecast.find('time_becoming').text
+            else:
+                time_becoming = None
+            if forecast.find('probability') is not None:
+                probability = forecast.find('probability').text
+            else:
+                probability = None
+            if forecast.find('wind_speed_kt') is not None:
+                wind_speed_kt = forecast.find('wind_speed_kt').text
+            else:
+                wind_speed_kt = None
+            if forecast.find('wind_gust_kt') is not None:
+                wind_gust_kt = forecast.find('wind_gust_kt').text
+            else:
+                wind_gust_kt = None
+            if forecast.find('wind_shear_hgt_ft_agl') is not None:
+                wind_shear_hgt_ft_agl = forecast.find('wind_shear_hgt_ft_agl').text
+            else:
+                wind_shear_hgt_ft_agl = None
+            if forecast.find('wind_shear_dir_degrees') is not None:
+                wind_shear_dir_degrees = forecast.find('wind_shear_dir_degrees').text
+            else:
+                wind_shear_dir_degrees = None
+            if forecast.find('wind_shear_speed_kt') is not None:
+                wind_shear_speed_kt = forecast.find('wind_shear_speed_kt').text
+            else:
+                wind_shear_speed_kt = None
+            if forecast.find('visibility_statute_mi') is not None:
+                visibility_statute_mi = forecast.find('visibility_statute_mi').text
+            else:
+                visibility_statute_mi = None
+            if forecast.find('altim_in_hg') is not None:
+                altim_in_hg = forecast.find('altim_in_hg').text
+            else:
+                altim_in_hg = None
+            if forecast.find('vert_vis_ft') is not None:
+                vert_vis_ft = forecast.find('vert_vis_ft').text
+            else:
+                vert_vis_ft = None
+            if forecast.find('wx_string') is not None:
+                wx_string = forecast.find('wx_string').text
+            else:
+                wx_string = None
+            if forecast.find('not_decoded') is not None:
+                not_decoded = forecast.find('not_decoded').text
+            else:
+                not_decoded = None
+            
+            
+            sky_cover = []
+            cloud_base_ft_agl = []
+            cloud_type = []
+            for condition in forecast.iter('sky_condition'):
+                sky_cover.append(condition.get('sky_cover'))
+                cloud_base_ft_agl.append(condition.get('cloud_base_ft_agl'))
+                cloud_type.append(condition.get('cloud_type'))
+
+            if len(sky_cover) == 0:
+                sky_cover.append(None)
+                sky_cover.append(None)
+            if len(sky_cover) == 1:
+                sky_cover.append(None)
+            if len(cloud_base_ft_agl) == 0:
+                cloud_base_ft_agl.append(None)
+                cloud_base_ft_agl.append(None)
+            if len(cloud_base_ft_agl) == 1:
+                cloud_base_ft_agl.append(None)
+            if len(cloud_type) == 0:
+                cloud_type.append(None)
+                cloud_type.append(None)
+            if len(cloud_type) == 1:
+                cloud_type.append(None)
+
+            turbulence_intensity = []
+            turbulence_min_alt_ft_agl = []
+            turbulence_max_alt_ft_agl = []
+            for condition in forecast.iter('turbulence_condition'):
+                turbulence_intensity.append(condition.get('turbulence_intensity'))
+                turbulence_min_alt_ft_agl.append(condition.get('turbulence_min_alt_ft_agl'))
+                turbulence_max_alt_ft_agl.append(condition.get('turbulence_max_alt_ft_agl'))
+            
+            if len(turbulence_intensity) == 0:
+                turbulence_intensity.append(None)
+                turbulence_intensity.append(None)
+            if len(turbulence_intensity) == 1:
+                turbulence_intensity.append(None)
+            if len(turbulence_min_alt_ft_agl) == 0:
+                turbulence_min_alt_ft_agl.append(None)
+                turbulence_min_alt_ft_agl.append(None)
+            if len(turbulence_min_alt_ft_agl) == 1:
+                turbulence_min_alt_ft_agl.append(None)
+            if len(turbulence_max_alt_ft_agl) == 0:
+                turbulence_max_alt_ft_agl.append(None)
+                turbulence_max_alt_ft_agl.append(None)
+            if len(turbulence_max_alt_ft_agl) == 1:
+                turbulence_max_alt_ft_agl.append(None)
+            
+            icing_intensity = []
+            icing_min_alt_ft_agl = []
+            icing_max_alt_ft_agl = []
+            for condition in forecast.iter('icing_condition'):
+                icing_intensity.append(condition.get('icing_intensity'))
+                icing_min_alt_ft_agl.append(condition.get('icing_min_alt_ft_agl'))
+                icing_max_alt_ft_agl.append(condition.get('icing_max_alt_ft_agl'))
+
+            if len(icing_intensity) == 0:
+                icing_intensity.append(None)
+                icing_intensity.append(None)
+            if len(icing_intensity) == 1:
+                icing_intensity.append(None)
+            if len(icing_min_alt_ft_agl) == 0:
+                icing_min_alt_ft_agl.append(None)
+                icing_min_alt_ft_agl.append(None)
+            if len(icing_min_alt_ft_agl) == 1:
+                icing_min_alt_ft_agl.append(None)
+            if len(icing_max_alt_ft_agl) == 0:
+                icing_max_alt_ft_agl.append(None)
+                icing_max_alt_ft_agl.append(None)
+            if len(icing_max_alt_ft_agl) == 1:
+                icing_max_alt_ft_agl.append(None)
+
+            if forecast.find('valid_time') is not None:
+                valid_time = forecast.find('valid_time').text
+            else:
+                valid_time = None
+            if forecast.find('sfc_temp_c') is not None:
+                sfc_temp_c = forecast.find('sfc_temp_c').text
+            else:
+                sfc_temp_c = None
+            if forecast.find('max_temp_c') is not None:
+                max_temp_c = forecast.find('max_temp_c').text
+            else:
+                max_temp_c = None
+            if forecast.find('min_temp_c') is not None:
+                min_temp_c = forecast.find('min_temp_c').text
+            else:
+                min_temp_c = None
+            
+
+            WX = Taf.query.filter_by(station_id=station_id, issue_time=issue_time, fcst_time_from=fcst_time_from, fcst_time_to=fcst_time_to).first()
+            if WX is None:
+                WXDB = Taf(station_id=station_id, issue_time=issue_time, bulletin_time=bulletin_time, latitude=latitude, longitude=longitude, valid_time_from=valid_time_from, valid_time_to=valid_time_to, remarks=remarks, elevation_m=elevation_m, fcst_time_from=fcst_time_from, fcst_time_to=fcst_time_to, change_indicator=change_indicator, time_becoming=time_becoming, probability=probability, wind_dir_degrees=wind_dir_degrees, wind_speed_kt=wind_speed_kt, wind_gust_kt=wind_gust_kt, wind_shear_dir_degrees=wind_shear_dir_degrees, wind_shear_speed_kt=wind_shear_speed_kt, wind_shear_hgt_ft_agl=wind_shear_hgt_ft_agl, visibility_statute_mi=visibility_statute_mi, altim_in_hg=altim_in_hg, vert_vis_ft=vert_vis_ft, wx_string=wx_string, not_decoded=not_decoded, valid_time=valid_time, sfc_temp_c=sfc_temp_c, max_temp_c=max_temp_c, min_temp_c=min_temp_c, raw_text=raw_text, cloud_base_ft_agl1=cloud_base_ft_agl[0], cloud_base_ft_agl2=cloud_base_ft_agl[1], cloud_type1=cloud_type[0], cloud_type2=cloud_type[1], icing_intensity1=icing_intensity[0], icing_intensity2=icing_intensity[1], icing_max_alt_ft_agl1=icing_max_alt_ft_agl[0], icing_max_alt_ft_agl2=icing_max_alt_ft_agl[1], icing_min_alt_ft_agl1=icing_min_alt_ft_agl[0], icing_min_alt_ft_agl2=icing_min_alt_ft_agl[1], sky_cover1=sky_cover[0], sky_cover2=sky_cover[1], turbulence_intensity1=turbulence_intensity[0], turbulence_intensity2=turbulence_intensity[1], turbulence_max_alt_ft_agl1=turbulence_max_alt_ft_agl[0], turbulence_max_alt_ft_agl2=turbulence_max_alt_ft_agl[1], turbulence_min_alt_ft_agl1=turbulence_min_alt_ft_agl[0], turbulence_min_alt_ft_agl2=turbulence_min_alt_ft_agl[1])
+                db.session.add(WXDB)
+                db.session.commit()
+                print(station_id, icing_intensity, icing_min_alt_ft_agl, icing_max_alt_ft_agl, turbulence_intensity, turbulence_min_alt_ft_agl, turbulence_max_alt_ft_agl, sky_cover, cloud_base_ft_agl, cloud_type)
+
+@app.cli.command()
+def loadSIGMET(): 
+    """Load PIREP."""
+    url = "https://www.aviationweather.gov/adds/dataserver_current/current/airsigmets.cache.xml"
+
+    content = urllib.request.urlopen(url).read()
+
+    root = ET.fromstring(content)
+    for sigmet in root.iter('AIRSIGMET'):
+        raw_text = sigmet.find('raw_text').text
+        valid_time_from = sigmet.find('valid_time_from').text
+        valid_time_to = sigmet.find('valid_time_to').text
+        if sigmet.iter('altitude') is not None:
+            for alititude in sigmet.iter('altitude'): 
+                min_ft_msl = alititude.get('min_ft_msl')
+                max_ft_msl = alititude.get('max_ft_msl')
+        if sigmet.iter('hazard') is not None:
+            for cond in sigmet.iter('hazard'):
+                hazard = cond.get('type')
+                severity = cond.get('severity')
+        airsigmet_type = sigmet.find('airsigmet_type').text
+        if sigmet.find('movement_dir_degrees') is not None:
+            movement_dir_degrees = sigmet.find('movement_dir_degrees').text
+            movement_speed_kt = sigmet.find('movement_speed_kt').text
+        else:
+            movement_dir_degrees = None
+            movement_speed_kt = None
+
+
+        latlong = []
+        if sigmet.iter('area') is not None:
+            for points in sigmet.iter('area'):
+                for point in points.iter('point'):
+                    latlng = []
+                    latitude = float(point.find('latitude').text)
+                    longitude = float(point.find('longitude').text)
+                    latlng.append(latitude)
+                    latlng.append(longitude)
+                    latlong.append(latlng)
+
+        print(min_ft_msl, max_ft_msl)
+
+        SIG = Airsigmet.query.filter_by(raw_text=raw_text).first()
+        if SIG is None:
+            SIGMET = Airsigmet(raw_text=raw_text, valid_time_from=valid_time_from, valid_time_to=valid_time_to, min_ft_msl=min_ft_msl, max_ft_msl=max_ft_msl, hazard=hazard, severity=severity, movement_dir_degrees=movement_dir_degrees, movement_speed_kt=movement_speed_kt, lonlat=latlong, airsigmet_type=airsigmet_type)
+            db.session.add(SIGMET)
+            db.session.commit()
+            

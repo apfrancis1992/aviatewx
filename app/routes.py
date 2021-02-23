@@ -3,7 +3,7 @@ from flask_login import login_user, logout_user, current_user, login_required
 from werkzeug.urls import url_parse
 from app import app, db
 from app.forms import LoginForm, RegistrationForm, EditProfileForm, SearchStation, FollowForm
-from app.models import User, Metar, Taf, Pirep, Follow
+from app.models import User, Metar, Taf, Pirep, Follow, Airsigmet
 from datetime import datetime
 from sqlalchemy import desc
 import os
@@ -117,3 +117,14 @@ def follow():
 def favicon():
     return send_from_directory(os.path.join(app.root_path, 'static'),
                           'favicon.ico',mimetype='image/vnd.microsoft.icon')
+
+
+@app.route('/map', methods=['GET', 'POST'])
+@login_required
+def map():
+    latlong = Metar.query.from_statement(db.text(f"SELECT DISTINCT ON (station_id) station_id, * FROM metar WHERE station_id LIKE 'KA%';")).all()
+    sigmets = Airsigmet.query.from_statement(db.text("SELECT * FROM airsigmet WHERE valid_time_to >= NOW();"))
+    pireps = Pirep.query.from_statement(db.text("SELECT * FROM pirep WHERE observation_time >= NOW() - INTERVAL '1 HOUR';")).all()
+    for pirep in pireps:
+        print(pirep.latitude, pirep.longitude)
+    return render_template('map.html', title='Follow', latlong=latlong, sigmets=sigmets, pireps=pireps)
