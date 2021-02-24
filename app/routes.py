@@ -122,7 +122,7 @@ def favicon():
 @app.route('/map', methods=['GET', 'POST'])
 @login_required
 def map():
-    latlong = Metar.query.from_statement(db.text(f"SELECT DISTINCT ON (station_id) station_id, * FROM metar WHERE station_id LIKE 'KA%';")).all()
+    latlong = Metar.query.from_statement(db.text(f"SELECT DISTINCT ON (station_id) station_id, * FROM metar;")).all()
     MTN_OBSCN = Airsigmet.query.from_statement(db.text("SELECT * FROM airsigmet WHERE valid_time_to >= NOW() AND hazard = 'MTN OBSCN';"))
     IFR = Airsigmet.query.from_statement(db.text("SELECT * FROM airsigmet WHERE valid_time_to >= NOW() AND hazard = 'IFR';"))
     TURB = Airsigmet.query.from_statement(db.text("SELECT * FROM airsigmet WHERE valid_time_to >= NOW() AND hazard = 'TURB';"))
