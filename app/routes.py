@@ -142,6 +142,7 @@ def map():
         j = json.loads(r.text)
         latitude = j['geo']['latitude']
         longitude = j['geo']['longitude']
+        print(url)
     except:
         latitude = 44.967243
         longitude = -103.771556
