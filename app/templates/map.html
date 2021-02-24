@@ -12,19 +12,45 @@
   <div id="map"></div>
  
   <script>
-
-
-var sigmet = L.layerGroup();
-
-
-    {% for sigmet in sigmets %}
-    var polygonPoints = {{sigmet.lonlat}};
-        var poly = L.polygon(polygonPoints).addTo(sigmet).bindPopup("{{sigmet.hazard}} {{sigmet.severity}}").openPopup();
+var ash = L.layerGroup();
+    {% for ash in ASH %}
+    var polygonPoints = {{ash.lonlat}};
+        var poly = L.polygon(polygonPoints).addTo(ash).bindPopup("Hazard: {{ash.hazard}}{% if ash.severity != 'NONE' %}<br>Severity: {{ash.severity}}{% endif %}<br>Min Altitude: {{ash.min_ft_msl}}<br>Max Altitude: {{ash.max_ft_msl}}").openPopup();
     {% endfor %}
 
-    var pirep = L.layerGroup();
+var convective = L.layerGroup();
+    {% for convective in CONVECTIVE %}
+    var polygonPoints = {{convective.lonlat}};
+        var poly = L.polygon(polygonPoints).addTo(convective).bindPopup("Hazard: {{convective.hazard}}{% if convective.severity != 'NONE' %}<br>Severity: {{convective.severity}}{% endif %}<br>Min Altitude: {{convective.min_ft_msl}}<br>Max Altitude: {{convective.max_ft_msl}}").openPopup();
+    {% endfor %}
+
+var ice = L.layerGroup();
+    {% for ice in ICE %}
+    var polygonPoints = {{ice.lonlat}};
+        var poly = L.polygon(polygonPoints).addTo(ice).bindPopup("Hazard: {{ice.hazard}}{% if ice.severity != 'NONE' %}<br>Severity: {{ice.severity}}{% endif %}<br>Min Altitude: {{ice.min_ft_msl}}<br>Max Altitude: {{ice.max_ft_msl}}").openPopup();
+    {% endfor %}
+ 
+var turb = L.layerGroup();
+    {% for turb in TURB %}
+    var polygonPoints = {{turb.lonlat}};
+        var poly = L.polygon(polygonPoints).addTo(turb).bindPopup("Hazard: {{turb.hazard}}{% if turb.severity != 'NONE' %}<br>Severity: {{turb.severity}}{% endif %}<br>Min Altitude: {{turb.min_ft_msl}}<br>Max Altitude: {{turb.max_ft_msl}}").openPopup();
+    {% endfor %}
+
+var ifr = L.layerGroup();
+    {% for ifr in IFR %}
+    var polygonPoints = {{ifr.lonlat}};
+        var poly = L.polygon(polygonPoints).addTo(ifr).bindPopup("Hazard: {{ifr.hazard}}{% if ifr.severity != 'NONE' %}<br>Severity: {{ifr.severity}}{% endif %}<br>Min Altitude: {{ifr.min_ft_msl}}<br>Max Altitude: {{ifr.max_ft_msl}}").openPopup();
+    {% endfor %}
+
+var mtn = L.layerGroup();
+    {% for mtn in MTN_OBSCN %}
+    var polygonPoints = {{mtn.lonlat}};
+        var poly = L.polygon(polygonPoints).addTo(mtn).bindPopup("Hazard: {{mtn.hazard}}{% if mtn.severity != 'NONE' %}<br>Severity: {{mtn.severity}}{% endif %}<br>Min Altitude: {{mtn.min_ft_msl}}<br>Max Altitude: {{mtn.max_ft_msl}}").openPopup();
+    {% endfor %}
+
+var pirep = L.layerGroup();
     {% for pirep in pireps %}
-        L.marker([{{pirep.latitude}}, {{pirep.longitude}}]).addTo(pirep).bindPopup("{{pirep.aircraft_ref}}").openPopup();
+        L.marker([{{pirep.latitude}}, {{pirep.longitude}}]).addTo(pirep).bindPopup("Aircraft: {{pirep.aircraft_ref}} <br>Alititude: {{pirep.altitude_ft_msl}}").openPopup();
     {% endfor %}
 
 var mbAttr = 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, ' +
@@ -37,7 +63,7 @@ var grayscale   = L.tileLayer(mbUrl, {id: 'mapbox/light-v9', tileSize: 512, zoom
 var map = L.map('map', {
     center: [39.73, -104.99],
     zoom: 6,
-    layers: [grayscale, sigmet]
+    layers: [grayscale, mtn]
 });
 
 var baseLayers = {
@@ -46,7 +72,12 @@ var baseLayers = {
 };
 
 var overlays = {
-    "SIGMET": sigmet,
+    "Mountains": mtn,
+    "Turbulence": turb,
+    "IFR": ifr,
+    "Ice": ice,
+    "Ash": ash,
+    "Convective": convective,
     "PIREP": pirep
 };
 

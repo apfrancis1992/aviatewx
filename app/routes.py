@@ -91,7 +91,7 @@ def edit_profile():
 @app.route('/station/<station_id>', methods=['GET', 'POST'])
 @login_required
 def station(station_id):
-    station_metar = Metar.query.filter_by(station_id=station_id).order_by(Metar.id.desc()).limit(1).first_or_404()
+    station_metar = Metar.query.filter_by(station_id=station_id).order_by(Metar.id.desc()).limit(1).first()
     taf_time = Taf.query.filter_by(station_id=station_id).order_by(Taf.id.desc()).first()
     print(taf_time)
     if taf_time is not None:
@@ -123,8 +123,11 @@ def favicon():
 @login_required
 def map():
     latlong = Metar.query.from_statement(db.text(f"SELECT DISTINCT ON (station_id) station_id, * FROM metar WHERE station_id LIKE 'KA%';")).all()
-    sigmets = Airsigmet.query.from_statement(db.text("SELECT * FROM airsigmet WHERE valid_time_to >= NOW();"))
+    MTN_OBSCN = Airsigmet.query.from_statement(db.text("SELECT * FROM airsigmet WHERE valid_time_to >= NOW() AND hazard = 'MTN OBSCN';"))
+    IFR = Airsigmet.query.from_statement(db.text("SELECT * FROM airsigmet WHERE valid_time_to >= NOW() AND hazard = 'IFR';"))
+    TURB = Airsigmet.query.from_statement(db.text("SELECT * FROM airsigmet WHERE valid_time_to >= NOW() AND hazard = 'TURB';"))
+    ICE = Airsigmet.query.from_statement(db.text("SELECT * FROM airsigmet WHERE valid_time_to >= NOW() AND hazard = 'ICE';"))
     pireps = Pirep.query.from_statement(db.text("SELECT * FROM pirep WHERE observation_time >= NOW() - INTERVAL '1 HOUR';")).all()
-    for pirep in pireps:
-        print(pirep.latitude, pirep.longitude)
-    return render_template('map.html', title='Follow', latlong=latlong, sigmets=sigmets, pireps=pireps)
+    CONVECTIVE = Airsigmet.query.from_statement(db.text("SELECT * FROM airsigmet WHERE valid_time_to >= NOW() AND hazard = 'CONVECTIVE';"))
+    ASH = Airsigmet.query.from_statement(db.text("SELECT * FROM airsigmet WHERE valid_time_to >= NOW() AND hazard = 'ASH';"))
+    return render_template('map.html', title='Follow', latlong=latlong, MTN_OBSCN=MTN_OBSCN, pireps=pireps, IFR=IFR, TURB=TURB, ICE=ICE, CONVECTIVE=CONVECTIVE, ASH=ASH)
