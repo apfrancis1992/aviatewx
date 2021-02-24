@@ -142,8 +142,8 @@ def map():
     url = f"https://api.ipgeolocationapi.com/geolocate/{request.headers['X-Real-IP']}"
     r = requests.get(url)
     j = json.loads(r.text)
-    latitude = j['geo']['latitude']
-    longitude = j['geo']['longitude']
+    latitude = j['geo']['latitude_dec']
+    longitude = j['geo']['longitude_dec']
     print(url)
 #    except:
 #        latitude = 44.967243
