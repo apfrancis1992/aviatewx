@@ -224,4 +224,5 @@ class Access(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     ip = db.Column(INET)
+    path = db.Column(db.String(100))
     time = db.Column(db.DateTime, default=datetime.utcnow)

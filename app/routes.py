@@ -15,7 +15,7 @@ def before_request():
         current_user.last_seen = datetime.utcnow()
         db.session.commit()
         try:
-            track = Access(user_id=current_user.id, ip=request.headers['X-Real-IP'], time=datetime.utcnow())
+            track = Access(user_id=current_user.id, ip=request.headers['X-Real-IP'], time=datetime.utcnow(), path=request.full_path)
             db.session.add(track)
             db.session.commit()
         except:
