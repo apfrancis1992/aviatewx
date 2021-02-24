@@ -136,4 +136,13 @@ def map():
     pireps = Pirep.query.from_statement(db.text("SELECT * FROM pirep WHERE observation_time >= NOW() - INTERVAL '1 HOUR';")).all()
     CONVECTIVE = Airsigmet.query.from_statement(db.text("SELECT * FROM airsigmet WHERE valid_time_to >= NOW() AND hazard = 'CONVECTIVE';"))
     ASH = Airsigmet.query.from_statement(db.text("SELECT * FROM airsigmet WHERE valid_time_to >= NOW() AND hazard = 'ASH';"))
-    return render_template('map.html', title='Follow', latlong=latlong, MTN_OBSCN=MTN_OBSCN, pireps=pireps, IFR=IFR, TURB=TURB, ICE=ICE, CONVECTIVE=CONVECTIVE, ASH=ASH)
+    try:
+        url = f"https://api.ipgeolocationapi.com/geolocate/{request.headers['X-Real-IP']}"
+        r = requests.get(url)
+        j = json.loads(r.text)
+        latitude = j['geo']['latitude']
+        longitude = j['geo']['longitude']
+    except:
+        latitude = 44.967243
+        longitude = -103.771556
+    return render_template('map.html', title='Follow', latlong=latlong, MTN_OBSCN=MTN_OBSCN, pireps=pireps, IFR=IFR, TURB=TURB, ICE=ICE, CONVECTIVE=CONVECTIVE, ASH=ASH, latitude=latitude, longitude=longitude)

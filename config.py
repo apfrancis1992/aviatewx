@@ -17,4 +17,3 @@ class Config(object):
     ADMINS = ['']
     SECURITY_EMAIL_SENDER = ''
     POSTS_PER_PAGE = 25
-    
