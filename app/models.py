@@ -3,7 +3,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from datetime import datetime
 from hashlib import md5
-from sqlalchemy.dialects.postgresql import ARRAY
+from sqlalchemy.dialects.postgresql import ARRAY, INET
 
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -14,7 +14,7 @@ class User(UserMixin, db.Model):
     phone = db.Column(db.String(12), index=True, unique=True)
     access = db.Column(db.Integer, default=1)
     password_hash = db.Column(db.String(128))
-    last_seen = last_seen = db.Column(db.DateTime, default=datetime.utcnow)
+    last_seen = db.Column(db.DateTime, default=datetime.utcnow)
 
     def __repr__(self):
         return '<User {}>'.format(self.username)
@@ -219,3 +219,9 @@ class Airsigmet(db.Model):
     hazard = db.Column(db.String(20))
     severity = db.Column(db.String(20))
     airsigmet_type = db.Column(db.String(20))
+
+class Access(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    ip = db.Column(INET)
+    time = db.Column(db.DateTime, default=datetime.utcnow)

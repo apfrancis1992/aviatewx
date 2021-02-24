@@ -3,7 +3,7 @@ from flask_login import login_user, logout_user, current_user, login_required
 from werkzeug.urls import url_parse
 from app import app, db
 from app.forms import LoginForm, RegistrationForm, EditProfileForm, SearchStation, FollowForm
-from app.models import User, Metar, Taf, Pirep, Follow, Airsigmet
+from app.models import User, Metar, Taf, Pirep, Follow, Airsigmet, Access
 from datetime import datetime
 from sqlalchemy import desc
 import os
@@ -14,6 +14,12 @@ def before_request():
     if current_user.is_authenticated:
         current_user.last_seen = datetime.utcnow()
         db.session.commit()
+        try:
+            track = Access(user_id=current_user.id, ip=request.headers['X-Real-IP'], time=datetime.utcnow())
+            db.session.add(track)
+            db.session.commit()
+        except:
+            pass
 
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/index', methods=['GET', 'POST'])
