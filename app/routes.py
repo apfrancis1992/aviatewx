@@ -6,6 +6,7 @@ from app.forms import LoginForm, RegistrationForm, EditProfileForm, SearchStatio
 from app.models import User, Metar, Taf, Pirep, Follow, Airsigmet, Access
 from datetime import datetime
 from sqlalchemy import desc
+import requests
 import os
 
 
