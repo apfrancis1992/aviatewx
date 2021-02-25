@@ -48,9 +48,16 @@ var mtn = L.layerGroup();
         var poly = L.polygon(polygonPoints).addTo(mtn).bindPopup("Hazard: {{mtn.hazard}}{% if mtn.severity != 'NONE' %}<br>Severity: {{mtn.severity}}{% endif %}<br>Min Altitude: {{mtn.min_ft_msl}}<br>Max Altitude: {{mtn.max_ft_msl}}").openPopup();
     {% endfor %}
 
+
+var airplaneIcon = L.icon({
+    iconUrl: "{{url_for('static', filename='photos/airplane.png')}}",
+    iconSize: [40, 40]
+    
+})
+    
 var pirep = L.layerGroup();
     {% for pirep in pireps %}
-        L.marker([{{pirep.latitude}}, {{pirep.longitude}}]).addTo(pirep).bindPopup("Aircraft: {{pirep.aircraft_ref}} <br>Alititude: {{pirep.altitude_ft_msl}}").openPopup();
+        L.marker([{{pirep.latitude}}, {{pirep.longitude}}], {icon: airplaneIcon}).addTo(pirep).bindPopup("Aircraft: {{pirep.aircraft_ref}} <br>Alititude: {{pirep.altitude_ft_msl}}").openPopup();
     {% endfor %}
 
 var mbAttr = 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, ' +
